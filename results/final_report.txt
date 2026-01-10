@@ -1,0 +1,99 @@
+
+================================================================================
+INTRUSION DETECTION SYSTEM - FINAL REPORT
+Implementation of Paper Methodology on UNSW-NB15 Dataset
+================================================================================
+
+1. DATASET INFORMATION
+================================================================================
+Dataset: UNSW-NB15
+Training Samples: 82,332
+Testing Samples: 175,341
+Total Features: 42
+
+Class Distribution (Original Test Set):
+  - Normal Traffic: 56,000 (31.94%)
+  - Attack Traffic: 119,341 (68.06%)
+
+2. DATA PREPROCESSING
+================================================================================
+✓ Missing value imputation completed
+✓ Categorical variables encoded (proto, service, state)
+✓ Feature scaling applied (StandardScaler)
+✓ Data split: 70% Train, 15% Validation, 15% Test
+
+3. MODELS EVALUATED
+================================================================================
+The following machine learning models were trained and evaluated:
+  1. Random Forest (RF)
+  2. XGBoost
+  3. Decision Tree (DT)
+  4. Linear Support Vector Classifier (SVC)
+  5. Logistic Regression (LR)
+
+4. PERFORMANCE RESULTS
+================================================================================
+
+                   Model  Accuracy  Precision   Recall  F1-Score
+                 XGBoost  0.910472   0.982514 0.884197  0.930767
+      Random Forest (RF)  0.901940   0.989318 0.865268  0.923144
+      Decision Tree (DT)  0.893225   0.984766 0.856370  0.916091
+              Linear SVC  0.878910   0.963403 0.854551  0.905719
+Logistic Regression (LR)  0.855715   0.972241 0.811171  0.884432
+
+5. BEST MODEL: XGBoost
+================================================================================
+Performance Metrics:
+  - Accuracy:  0.9105
+  - Precision: 0.9825
+  - Recall:    0.8842
+  - F1-Score:  0.9308
+
+Confusion Matrix:
+  True Negatives:  54,122
+  False Positives: 1,878
+  False Negatives: 13,820
+  True Positives:  105,521
+
+Additional Metrics:
+  - Specificity: 0.9665
+  - Sensitivity: 0.8842
+  - False Positive Rate: 0.0335
+  - False Negative Rate: 0.1158
+
+6. KEY FINDINGS
+================================================================================
+
+✓ All models achieved accuracy > 80% on the test set
+✓ XGBoost performed best overall (F1-Score: 0.9308)
+✓ Best metric: Precision (0.9825)
+✓ Lowest metric: Recall (0.8842)
+✓ The model shows some overfitting tendency
+
+7. VISUALIZATIONS GENERATED
+================================================================================
+✓ class_distribution.png
+✓ performance_metrics_comparison.png
+✓ confusion_matrices.png
+✓ roc_curves.png
+✓ radar_chart.png
+✓ feature_importance.png
+✓ performance_heatmap.png
+✓ error_analysis.png
+✓ train_val_test_comparison.png
+✓ complexity_performance_tradeoff.png
+✓ best_model_detailed_analysis.png
+
+8. CONCLUSION
+================================================================================
+The implementation successfully replicated the methodology described in the paper.
+The XGBoost model demonstrated the best performance for intrusion detection
+on the UNSW-NB15 dataset, achieving an F1-score of 0.9308.
+
+This model effectively balances precision and recall, making it suitable for
+real-world intrusion detection scenarios where both false positives and false
+negatives carry significant operational costs.
+
+================================================================================
+Report Generated: 2025-11-28 12:48:10
+================================================================================

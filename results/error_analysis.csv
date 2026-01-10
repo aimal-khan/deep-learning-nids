@@ -1,0 +1,6 @@
+Model,False Positives,False Negatives
+Random Forest (RF),1115,16079
+XGBoost,1878,13820
+Decision Tree (DT),1581,17141
+Linear SVC,3874,17358
+Logistic Regression (LR),2764,22535
