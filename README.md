@@ -1,65 +1,101 @@
-# Deep Learning Network Intrusion Detection System (NIDS)
+# Network Intrusion Detection System using Ensemble Learning
 
-> AI-based system for detecting network intrusions and anomalies using deep learning on network traffic data.
+> AI-based intrusion detection achieving **91.04% accuracy** on the UNSW-NB15 benchmark dataset using XGBoost and Feature Stability Analysis.
 
 ## Overview
 
-Network Intrusion Detection Systems (NIDS) are critical for cybersecurity. This project implements a deep learning approach to classify network traffic as normal or malicious, detecting various attack types including DoS, Probe, R2L, and U2R attacks.
+Network Intrusion Detection Systems (NIDS) are critical for cybersecurity. This project implements an ensemble machine learning approach to classify network traffic as normal or malicious, with a focus on minimizing missed attacks (False Negatives).
 
-The system uses neural networks trained on network flow features to identify suspicious patterns that traditional rule-based systems might miss.
+**Key Innovation:** A custom **Feature Stability Analysis (FSA)** algorithm that identifies features important across both Random Forest and XGBoost architectures, reducing dimensionality from 42 to 19 features while improving generalization.
+
+## Results
+
+| Model | Accuracy | Precision | Recall | F1-Score |
+|:------|:---------|:----------|:-------|:---------|
+| **XGBoost (Best)** | **91.05%** | 98.25% | **88.42%** | **93.08%** |
+| Random Forest | 90.19% | **98.93%** | 86.53% | 92.31% |
+| Decision Tree | 89.32% | 98.48% | 85.04% | 91.19% |
+| Linear SVC | 87.95% | 99.26% | 81.73% | 89.65% |
+| Logistic Regression | 85.57% | 95.75% | 81.11% | 87.83% |
+
+### Confusion Matrix (XGBoost)
+- **True Positives (Attacks Detected):** 105,521
+- **True Negatives (Normal Correct):** 54,122
+- **False Negatives (Missed Attacks):** 13,820
+- **False Positives (False Alarms):** 1,878
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     subgraph Data
-        RAW[Network Logs]
-        PROC[Preprocessed Features]
+        RAW[UNSW-NB15 Dataset]
     end
 
-    subgraph Pipeline
-        FE[Feature Extraction]
-        SC[Scaling/Encoding]
+    subgraph Preprocessing
+        CLEAN[Missing Value Imputation]
+        ENC[Categorical Encoding]
+        SCALE[StandardScaler]
     end
 
-    subgraph Model
-        DNN[Deep Neural Network]
-        PRED[Classification]
+    subgraph Feature Selection
+        FSA[Feature Stability Analysis]
+        TOP[Top 19 Features]
     end
 
-    subgraph Output
-        ALERT[Intrusion Alerts]
-        REPORT[Analysis Report]
+    subgraph Models
+        RF[Random Forest]
+        XGB[XGBoost]
+        DT[Decision Tree]
     end
 
-    RAW --> FE --> SC --> PROC
-    PROC --> DNN --> PRED
-    PRED --> ALERT
-    PRED --> REPORT
+    subgraph Evaluation
+        CM[Confusion Matrix]
+        ROC[ROC Curves]
+        METRICS[Precision/Recall/F1]
+    end
+
+    RAW --> CLEAN --> ENC --> SCALE --> FSA --> TOP
+    TOP --> RF --> CM
+    TOP --> XGB --> METRICS
+    TOP --> DT --> ROC
 ```
 
-## Features
+## Key Visualizations
 
-- **Multi-class classification**: Normal, DoS, Probe, R2L, U2R
-- **Deep neural network**: Multi-layer architecture with dropout regularization
-- **Feature engineering**: Handles categorical and numerical network features
-- **Real-time capable**: Optimized for low-latency inference
-- **Evaluation suite**: Confusion matrix, precision/recall, ROC curves
+### Performance Comparison
+![Performance](results/performance_metrics_comparison.png)
+
+### Confusion Matrices
+![Confusion](results/confusion_matrices.png)
+
+### ROC Curves
+![ROC](results/roc_curves.png)
+
+### Feature Importance
+![Features](results/feature_importance.png)
+
+## Dataset
+
+**UNSW-NB15** — A modern network intrusion dataset containing:
+- **Training Samples:** 82,332
+- **Testing Samples:** 175,341
+- **Features:** 42 (reduced to 19 via FSA)
+- **Attack Types:** Normal, Generic, Exploits, Fuzzers, DoS, Reconnaissance, Analysis, Backdoor, Shellcode, Worms
 
 ## Project Structure
 
 ```
-├── data/
-│   └── sample_network_data.csv   # Sample network traffic data
-├── src/
-│   ├── data_loader.py            # Data loading and preprocessing
-│   ├── feature_processor.py      # Feature engineering
-│   ├── model.py                  # Neural network architecture
-│   └── trainer.py                # Training loop and evaluation
-├── models/
-│   └── (saved model weights)
-├── main.py                       # Main training/inference script
-├── requirements.txt              # Python dependencies
+├── intrusion_detection.ipynb     # Complete implementation notebook
+├── results/
+│   ├── model_performance_results.csv
+│   ├── confusion_matrices.png
+│   ├── roc_curves.png
+│   ├── feature_importance.png
+│   ├── performance_metrics_comparison.png
+│   ├── radar_chart.png
+│   └── final_report.txt
+├── requirements.txt
 └── README.md
 ```
 
@@ -69,62 +105,27 @@ flowchart LR
 # Install dependencies
 pip install -r requirements.txt
 
-# Train the model
-python main.py --mode train
-
-# Run inference
-python main.py --mode predict --input data/test_traffic.csv
+# Run the notebook
+jupyter notebook intrusion_detection.ipynb
 ```
 
-## Sample Output
+## Methodology
 
-```
-============================================================
-Deep Learning NIDS - Training
-============================================================
-
-Loading data...
-✓ Loaded 125,973 network records
-
-Preprocessing...
-✓ Encoded 3 categorical features
-✓ Scaled 38 numerical features
-
-Training Model...
-Epoch 1/50: Loss=0.4521, Accuracy=0.8234
-Epoch 10/50: Loss=0.1823, Accuracy=0.9456
-Epoch 50/50: Loss=0.0534, Accuracy=0.9891
-
-Evaluation Results:
-============================================================
-              precision    recall  f1-score   support
-
-      normal       0.99      0.99      0.99     60593
-         DoS       0.99      1.00      0.99     45927
-       Probe       0.98      0.97      0.97     11656
-         R2L       0.92      0.88      0.90      1126
-         U2R       0.85      0.78      0.81        52
-
-    accuracy                           0.99    119354
-   macro avg       0.95      0.92      0.93    119354
-============================================================
-```
-
-## Model Performance
-
-| Attack Type | Precision | Recall | F1-Score |
-|:------------|:----------|:-------|:---------|
-| Normal | 99.2% | 99.4% | 99.3% |
-| DoS | 99.5% | 99.8% | 99.6% |
-| Probe | 97.8% | 96.5% | 97.1% |
-| R2L | 91.5% | 88.2% | 89.8% |
-| U2R | 84.6% | 78.4% | 81.4% |
-
-**Overall Accuracy**: 98.9%
+1. **Data Preprocessing:** Missing value imputation, categorical encoding, feature scaling
+2. **Feature Stability Analysis:** Intersection of top features from RF and XGBoost across multiple samples
+3. **Model Training:** 5 classifiers with hyperparameter tuning via RandomizedSearchCV
+4. **Evaluation:** Accuracy, Precision, Recall, F1-Score, ROC-AUC, Confusion Matrix
 
 ## Tools & Technologies
 
-`Python` `TensorFlow/Keras` `Scikit-learn` `Pandas` `NumPy` `Deep Learning` `Cybersecurity`
+`Python` `Scikit-learn` `XGBoost` `Pandas` `NumPy` `Matplotlib` `Seaborn` `Jupyter`
+
+## Key Findings
+
+- **XGBoost** achieved the best balance of precision and recall
+- **Source TTL (sttl)** is the most discriminatory feature — attackers often craft packets with non-standard TTL values
+- Feature Stability Analysis reduced features by 55% while maintaining performance
+- All models achieved >85% accuracy, but tree-based ensembles significantly outperformed linear models
 
 ---
 
